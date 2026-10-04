@@ -1,0 +1,13 @@
+# A group: original full-state IEKF behavior.
+extrin_calib:
+  extrinsic_R: [1, 0, 0, 0, 1, 0, 0, 0, 1]
+
+imu:
+  gravity_est_en: true
+  ba_bg_est_en: true
+
+evo:
+  seq_name: "lili_2_out_first500s_fastlivo_D02_A_free_gravity"
+
+diagnostic:
+  experiment_tag: "A_free_gravity"

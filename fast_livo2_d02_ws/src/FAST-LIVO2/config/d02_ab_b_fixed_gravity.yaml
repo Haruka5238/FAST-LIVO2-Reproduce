@@ -1,0 +1,13 @@
+# B group: controlled ablation of gravity estimation only.
+extrin_calib:
+  extrinsic_R: [1, 0, 0, 0, 1, 0, 0, 0, 1]
+
+imu:
+  gravity_est_en: false
+  ba_bg_est_en: true
+
+evo:
+  seq_name: "lili_2_out_first500s_fastlivo_D02_B_fixed_gravity"
+
+diagnostic:
+  experiment_tag: "B_fixed_gravity"

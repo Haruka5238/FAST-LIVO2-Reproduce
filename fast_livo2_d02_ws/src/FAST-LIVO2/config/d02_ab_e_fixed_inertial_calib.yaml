@@ -1,0 +1,16 @@
+# E group: freeze all online inertial-calibration states after initialization.
+# IMU propagation, LiDAR/VIO updates, and the complete ROS node graph remain enabled.
+extrin_calib:
+  extrinsic_R: [1, 0, 0, 0, 1, 0, 0, 0, 1]
+
+imu:
+  gravity_est_en: false
+  ba_bg_est_en: true
+  acc_bias_est_en: false
+  gyro_bias_est_en: false
+
+evo:
+  seq_name: "lili_2_out_first500s_fastlivo_D02_E_fixed_inertial_calib"
+
+diagnostic:
+  experiment_tag: "E_fixed_inertial_calib"

@@ -1,0 +1,16 @@
+# D group: freeze the weakly observable accelerometer-bias/gravity pair only.
+# Gyro-bias estimation and the complete LiDAR/visual ROS node graph remain enabled.
+extrin_calib:
+  extrinsic_R: [1, 0, 0, 0, 1, 0, 0, 0, 1]
+
+imu:
+  gravity_est_en: false
+  ba_bg_est_en: true
+  acc_bias_est_en: false
+  gyro_bias_est_en: true
+
+evo:
+  seq_name: "lili_2_out_first500s_fastlivo_D02_D_fixed_inertial_pair"
+
+diagnostic:
+  experiment_tag: "D_fixed_inertial_pair"

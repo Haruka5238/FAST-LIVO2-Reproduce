@@ -1,0 +1,16 @@
+# C group: causal ablation of accelerometer-bias estimation only.
+# The complete ROS node graph, gravity estimation, and gyro-bias estimation remain enabled.
+extrin_calib:
+  extrinsic_R: [1, 0, 0, 0, 1, 0, 0, 0, 1]
+
+imu:
+  gravity_est_en: true
+  ba_bg_est_en: true
+  acc_bias_est_en: false
+  gyro_bias_est_en: true
+
+evo:
+  seq_name: "lili_2_out_first500s_fastlivo_D02_C_fixed_acc_bias"
+
+diagnostic:
+  experiment_tag: "C_fixed_acc_bias"

@@ -1,0 +1,18 @@
+# F group: original online inertial estimation with the rotation-only
+# LiDAR-to-IMU extrinsic fitted from LiDAR pose increments and raw gyroscope data.
+extrin_calib:
+  extrinsic_R: [ 0.882989039, -0.034845134, -0.468098465,
+                 0.023134460,  0.999259486, -0.030745361,
+                 0.468823158,  0.016318612,  0.883141296 ]
+
+imu:
+  gravity_est_en: true
+  ba_bg_est_en: true
+  acc_bias_est_en: true
+  gyro_bias_est_en: true
+
+evo:
+  seq_name: "lili_2_out_first500s_fastlivo_D02_F_fitted_lidar_imu_rotation"
+
+diagnostic:
+  experiment_tag: "F_fitted_lidar_imu_rotation"
