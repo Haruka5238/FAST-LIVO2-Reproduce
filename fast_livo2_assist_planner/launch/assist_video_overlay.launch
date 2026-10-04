@@ -1,0 +1,31 @@
+<launch>
+  <node pkg="fast_livo2_assist_planner" type="assist_video_overlay.py"
+        name="fast_livo2_assist_video_overlay" output="screen">
+    <param name="image_topic" value="/left_camera/image"/>
+    <param name="compressed_image_topic" value="/left_camera/image/compressed"/>
+    <param name="use_compressed_input" value="false"/>
+    <param name="status_topic" value="/fast_livo2_assist/status"/>
+    <param name="health_topic" value="/fast_livo2_health/advice"/>
+    <param name="overlay_topic" value="/fast_livo2_assist/overlay_image"/>
+    <param name="publish_compressed" value="true"/>
+    <param name="status_timeout_s" value="1.5"/>
+    <param name="goal_timeout_s" value="1.5"/>
+    <param name="odom_timeout_s" value="1.5"/>
+    <param name="horizontal_fov_deg" value="90.0"/>
+    <param name="invert_bearing" value="false"/>
+    <param name="bearing_smoothing_alpha" value="0.18"/>
+    <param name="distance_smoothing_alpha" value="0.25"/>
+    <param name="z_smoothing_alpha" value="0.25"/>
+    <param name="bearing_deadband_deg" value="12.0"/>
+    <param name="slight_turn_threshold_deg" value="18.0"/>
+    <param name="strong_turn_threshold_deg" value="35.0"/>
+    <param name="min_label_hold_s" value="0.8"/>
+    <param name="z_deadband_m" value="0.25"/>
+    <param name="nav_ball_radius_px" value="96"/>
+    <param name="nav_ball_z_scale_m" value="1.5"/>
+    <param name="standoff_min_m" value="1.5"/>
+    <param name="standoff_ideal_m" value="3.0"/>
+    <param name="standoff_max_m" value="6.0"/>
+    <param name="draw_debug_numbers" value="false"/>
+  </node>
+</launch>

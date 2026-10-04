@@ -1,0 +1,6 @@
+<launch>
+  <node pkg="fast_livo2_assist_planner" type="assist_planner_node"
+        name="fast_livo2_assist_planner" output="screen">
+    <rosparam command="load" file="$(find fast_livo2_assist_planner)/config/assist_planner.yaml"/>
+  </node>
+</launch>

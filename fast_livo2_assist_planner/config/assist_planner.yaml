@@ -1,0 +1,128 @@
+# fast_livo2_assist_planner parameters
+# MVP scope:
+# - local assist advisor, not a global coverage planner
+# - publishes suggestions only, never flight-control setpoints
+# - sparse cloud directions are only "potential rescan directions" until raycasting exists
+
+topics:
+  odom: /aft_mapped_to_init
+  cloud: /cloud_registered
+  health_advice: /fast_livo2_health/advice
+  pilot_intent: /fast_livo2_assist/pilot_intent
+
+frame:
+  world_frame: camera_init
+
+runtime:
+  odom_timeout_s: 1.0
+  health_timeout_s: 3.0
+
+map:
+  local_radius_m: 15.0
+  local_z_radius_m: 5.0
+  cloud_timeout_s: 1.0
+  require_fresh_cloud: true
+  suppress_on_frame_mismatch: true
+  max_cloud_points: 6000
+  sector_count: 16
+  target_sector_points: 180
+  min_sector_points_for_strong_gain: 20
+  update_rate_hz: 2.0
+
+evidence_grid:
+  enabled: true
+  # Set free_raycast_enabled: false when /cloud_registered is an accumulated map
+  # rather than the current-frame registered scan.  FREE raycasting from the
+  # current pose toward historical points would incorrectly mark regions as free
+  # that were never directly observed from this viewpoint.  OCCUPIED evidence is
+  # always updated regardless of this flag.
+  free_raycast_enabled: true
+  voxel_size_m: 0.5
+  free_ttl_s: 4.0
+  occupied_ttl_s: 20.0
+  max_ray_length_m: 12.0
+  ray_step_m: 0.5
+  free_ray_stride: 3
+  min_occupied_hits: 1
+  max_voxels: 40000
+
+candidate:
+  sample_radius_m: 3.0
+  sample_count: 16
+  min_goal_distance_m: 1.0
+  max_goal_distance_m: 5.0
+  min_obstacle_distance_m: 1.2
+  max_yaw_change_rad: 1.2
+  path_check_step_m: 0.35
+  z_offsets_m: [0.0, 0.75, -0.75]
+
+health_policy:
+  watch_sample_radius_scale: 0.7
+  watch_obstacle_distance_scale: 1.3
+  warning_retreat_distance_m: 2.0
+  recovering_max_goal_distance_m: 1.5
+  critical_publish_hold_goal: true
+
+confidence_policy:
+  very_low_suppresses: true
+  low_forces_conservative: true
+
+intent:
+  # FREE means "health HUD only" in NORMAL/WATCH; publish one of the
+  # directional intents below to ask for an advisory local path.
+  default_intent: FREE
+  message_default_duration_s: 8.0
+  corridor_deg: 60.0
+  orbit_corridor_deg: 70.0
+  vertical_corridor_deg: 90.0
+  free_mode_publishes_suggestions: false
+
+scoring:
+  w_task_progress: 1.2
+  w_coverage: 1.0
+  w_collision: 1.5
+  w_health: 2.0
+  w_unknown: 2.0
+  w_path_length: 0.3
+  w_turn: 0.4
+  repeat_sector_penalty: 0.1
+  repeat_sector_penalty_cap: 0.9
+  # Global fallback; per-mode values below take precedence when defined.
+  min_accept_score: -0.25
+  # EXPLORE / INTENT_ASSIST: must show positive contribution to justify publishing.
+  min_accept_score_explore: 0.05
+  # CONSERVATIVE (WATCH state): break even is enough.
+  min_accept_score_conservative: 0.00
+  # RECOVER: safety matters more than coverage gain.
+  min_accept_score_recover: -0.05
+  # RETREAT_OR_HOLD: accept low scores because the goal is to get away safely.
+  min_accept_score_retreat: -0.10
+
+safety:
+  max_unknown_path_ratio: 0.30
+  warning_max_unknown_path_ratio: 0.18
+  recovering_max_unknown_path_ratio: 0.22
+
+coverage:
+  min_standoff_m: 1.5
+  ideal_standoff_m: 3.0
+  max_standoff_m: 6.0
+  view_fov_rad: 1.5708
+  frontier_target_voxels: 30
+  surface_exhausted_density_fallback_scale: 0.35
+
+ui:
+  marker_scale: 0.35
+  show_all_candidates: false
+  status_print_period: 3.0
+
+stability:
+  enable_goal_commitment: true
+  min_goal_hold_s: 2.5
+  max_goal_hold_s: 6.0
+  switch_score_margin: 0.20
+  switch_bearing_margin_deg: 18.0
+
+logging:
+  enable_csv: true
+  csv_path: /tmp/fast_livo2_assist.csv

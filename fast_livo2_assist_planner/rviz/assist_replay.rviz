@@ -1,0 +1,123 @@
+Panels:
+  - Class: rviz/Displays
+    Name: Displays
+  - Class: rviz/Views
+    Name: Views
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Alpha: 0.35
+      Cell Size: 1
+      Class: rviz/Grid
+      Color: 70; 70; 70
+      Enabled: true
+      Line Style:
+        Line Width: 0.03
+        Value: Lines
+      Name: Reference Grid
+      Plane: XY
+      Plane Cell Count: 30
+      Reference Frame: <Fixed Frame>
+      Value: true
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 10
+        Min Value: -10
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/PointCloud2
+      Color: 210; 220; 230
+      Color Transformer: FlatColor
+      Decay Time: 8
+      Enabled: true
+      Name: FAST-LIVO2 Local Cloud
+      Position Transformer: XYZ
+      Queue Size: 3
+      Selectable: true
+      Size (m): 0.035
+      Style: Flat Squares
+      Topic: /cloud_registered
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz/Path
+      Color: 30; 220; 80
+      Enabled: true
+      Head Diameter: 0.25
+      Head Length: 0.35
+      Length: 0.35
+      Line Style: Lines
+      Line Width: 0.12
+      Name: Recommended Assist Path
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Color: 30; 220; 80
+      Pose Style: None
+      Queue Size: 3
+      Radius: 0.08
+      Shaft Diameter: 0.08
+      Shaft Length: 0.25
+      Topic: /fast_livo2_assist/recommended_path
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /fast_livo2_assist/marker_array
+      Name: Assist Markers
+      Namespaces:
+        {}
+      Queue Size: 10
+      Value: true
+  Enabled: true
+  Global Options:
+    Background Color: 38; 42; 46
+    Default Light: true
+    Fixed Frame: camera_init
+    Frame Rate: 30
+  Name: root
+  Tools:
+    - Class: rviz/Interact
+    - Class: rviz/MoveCamera
+    - Class: rviz/Select
+    - Class: rviz/FocusCamera
+    - Class: rviz/Measure
+  Value: true
+  Views:
+    Current:
+      Class: rviz/Orbit
+      Distance: 22
+      Enable Stereo Rendering:
+        Stereo Eye Separation: 0.06
+        Stereo Focal Distance: 1
+        Swap Stereo Eyes: false
+        Value: false
+      Focal Point:
+        X: 0
+        Y: 0
+        Z: 0
+      Focal Shape Fixed Size: true
+      Focal Shape Size: 0.05
+      Invert Z Axis: false
+      Name: Current View
+      Near Clip Distance: 0.01
+      Pitch: 0.65
+      Target Frame: <Fixed Frame>
+      Yaw: 0.8
+    Saved: ~
+Window Geometry:
+  Displays:
+    collapsed: false
+  Height: 1000
+  Hide Left Dock: false
+  Hide Right Dock: false
+  QMainWindow State: 000000ff00000000fd0000000100000000000001680000037efc0200000001fb000000100044006900730070006c006100790073010000003d0000037e000000c900ffffff00000780000003de00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  Views:
+    collapsed: false
+  Width: 1600
+  X: 80
+  Y: 40

@@ -1,0 +1,37 @@
+<launch>
+  <!-- Rosbag replay helper for the online-mapping stack.
+       By default this starts only monitor/advisor/dashboard. Enable FAST-LIVO2
+       and rosbag playback explicitly once the dataset and sensor config are known. -->
+  <arg name="use_sim_time" default="true"/>
+  <arg name="start_fast_livo2" default="false"/>
+  <arg name="fast_livo2_launch" default="$(find fast_livo)/launch/mapping_avia.launch"/>
+  <arg name="fast_livo2_rviz" default="true"/>
+  <arg name="start_assist_rviz" default="false"/>
+  <arg name="assist_rviz_config" default="$(find fast_livo2_assist_planner)/rviz/assist_replay.rviz"/>
+  <arg name="start_video_overlay" default="true"/>
+  <arg name="start_dashboard" default="true"/>
+  <arg name="play_bag" default="false"/>
+  <arg name="bag" default=""/>
+  <arg name="bag_rate" default="1.0"/>
+
+  <param name="/use_sim_time" value="$(arg use_sim_time)"/>
+
+  <include if="$(arg start_fast_livo2)" file="$(arg fast_livo2_launch)">
+    <arg name="rviz" value="$(arg fast_livo2_rviz)"/>
+  </include>
+
+  <include file="$(find fast_livo2_health_monitor)/launch/health_monitor.launch"/>
+  <include file="$(find fast_livo2_assist_planner)/launch/assist_planner.launch"/>
+
+  <include if="$(arg start_assist_rviz)" file="$(find fast_livo2_assist_planner)/launch/assist_rviz.launch">
+    <arg name="config" value="$(arg assist_rviz_config)"/>
+  </include>
+
+  <include if="$(arg start_video_overlay)" file="$(find fast_livo2_assist_planner)/launch/assist_video_overlay.launch"/>
+
+  <include if="$(arg start_dashboard)" file="$(find fast_livo2_health_monitor)/launch/web_dashboard.launch"/>
+
+  <node if="$(arg play_bag)" pkg="rosbag" type="play" name="fast_livo2_replay_bag"
+        args="--clock -r $(arg bag_rate) $(arg bag)"
+        output="screen"/>
+</launch>

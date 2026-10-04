@@ -1,0 +1,6 @@
+<launch>
+  <arg name="config" default="$(find fast_livo2_assist_planner)/rviz/assist_replay.rviz"/>
+
+  <node pkg="rviz" type="rviz" name="fast_livo2_assist_rviz"
+        args="-d $(arg config)" output="screen"/>
+</launch>
