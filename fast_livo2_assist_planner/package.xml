@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>fast_livo2_assist_planner</name>
+  <version>0.1.0</version>
+  <description>
+    Human-in-the-loop assist planner for FAST-LIVO2 reliable online mapping.
+    It publishes suggested viewpoints, paths, markers, and operator prompts
+    only; it never publishes flight-control setpoints.
+  </description>
+  <maintainer email="user@example.com">dachuang</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>roscpp</depend>
+  <depend>rospy</depend>
+  <depend>std_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>visualization_msgs</depend>
+  <depend>cv_bridge</depend>
+</package>

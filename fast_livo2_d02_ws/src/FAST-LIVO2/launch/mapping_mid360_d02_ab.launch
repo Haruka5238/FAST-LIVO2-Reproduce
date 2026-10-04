@@ -1,0 +1,21 @@
+<launch>
+  <!-- Run A and B sequentially with variant:=a_free_gravity or b_fixed_gravity. -->
+  <arg name="variant" default="a_free_gravity" />
+  <arg name="rviz" default="true" />
+
+  <rosparam command="load" file="$(find fast_livo)/config/mid360.yaml" />
+  <rosparam command="load" file="$(find fast_livo)/config/d02_ab_$(arg variant).yaml" />
+
+  <node pkg="fast_livo" type="fastlivo_mapping" name="laserMapping" output="screen">
+    <rosparam file="$(find fast_livo)/config/camera_pinhole_mid360.yaml" />
+  </node>
+
+  <group if="$(arg rviz)">
+    <node launch-prefix="nice" pkg="rviz" type="rviz" name="rviz"
+          args="-d $(find fast_livo)/rviz_cfg/fast_livo2.rviz" />
+  </group>
+
+  <node pkg="image_transport" type="republish" name="republish"
+        args="compressed in:=/left_camera/image raw out:=/left_camera/image"
+        output="screen" respawn="true" />
+</launch>
