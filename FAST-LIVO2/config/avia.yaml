@@ -1,0 +1,213 @@
+common:
+  img_topic: "/left_camera/image"
+  lid_topic: "/livox/lidar"
+  imu_topic: "/livox/imu"
+  img_en: 1
+  lidar_en: 1
+  ros_driver_bug_fix: false
+
+extrin_calib:
+  extrinsic_T: [0.04165, 0.02326, -0.0284]
+  extrinsic_R: [1, 0, 0, 0, 1, 0, 0, 0, 1]
+  Rcl: [0.00610193,-0.999863,-0.0154172,
+        -0.00615449,0.0153796,-0.999863,
+        0.999962,0.00619598,-0.0060598] 
+  Pcl: [0.0194384, 0.104689,-0.0251952]
+
+time_offset: 
+  imu_time_offset: 0.0
+  img_time_offset: 0.1
+  exposure_time_init: 0.0
+
+preprocess:
+  point_filter_num: 1
+  filter_size_surf: 0.1
+  lidar_type: 1 # Livox Avia LiDAR
+  scan_line: 6
+  blind: 0.8
+
+vio:
+  max_iterations: 5
+  outlier_threshold: 1000 # 78 100 156 #100 200 500 700 infinite
+  img_point_cov: 100 # 100 1000 
+  patch_size: 8
+  patch_pyrimid_level: 4
+  normal_en: true
+  raycast_en: false
+  inverse_composition_en: false
+  exposure_estimate_en: true
+  inv_expo_cov: 0.1
+
+imu:
+  imu_en: true
+  imu_int_frame: 30
+  max_propagation_interval: 0.5 # s; larger forward gaps trigger a coordinated reset
+  acc_cov: 0.5 # 0.2
+  gyr_cov: 0.3 # 0.5
+  b_acc_cov: 0.0001 # 0.1
+  b_gyr_cov: 0.0001 # 0.1
+
+lio:
+  max_iterations: 5
+  dept_err: 0.02
+  beam_err: 0.05
+  min_eigen_value: 0.0025 # 0.005
+  voxel_size: 0.5
+  max_layer: 2
+  max_points_num: 50
+  layer_init_num: [5, 5, 5, 5, 5]
+
+local_map:  
+  map_sliding_en: false
+  half_map_size: 100
+  sliding_thresh: 8
+
+uav:
+  imu_rate_odom: true
+  gravity_align_en: false
+
+publish:
+  dense_map_en: true
+  pub_effect_point_en: true
+  pub_plane_en: false
+  pub_scan_num: 1
+  blind_rgb_points: 0.0
+
+evo:
+  seq_name: "CBD_Building_01"
+  pose_output_en: false
+
+pcd_save:
+  pcd_save_en: false
+  allow_unbounded_buffer: false
+  type: 0 # 0: World Frame, 1: Body Frame;
+  colmap_output_en: false # need to set interval = -1
+  filter_size_pcd: 0.15
+  interval: -1
+  # how many LiDAR frames saved in each pcd file;
+  # -1 : all frames will be saved in ONE pcd file, may lead to memory crash when having too much frames.
+
+image_save:
+  img_save_en: false
+  interval: 1
+
+# MODIFICATIONS: degradation-aware adaptive mapping (Innovations 1-23)
+# All *_en=false is the modified-safe all-off ablation; stock FAST-LIVO2 requires the original binary.
+adaptive:
+  # Innovation 1 — geometric degeneracy direction suppression (voxel_map)
+  degeneracy_aware_en: true
+  coupled_degeneracy_en: true # Innovation 22: prior-whitened full 6DoF coupling
+  degeneracy_alpha: 10.0     # sigmoid steepness: higher = sharper boundary
+  degeneracy_tau: 0.05       # eigenvalue-ratio threshold for degeneracy onset
+  degeneracy_min_factor: 0.08 # floor for directional degeneracy suppression
+  degeneracy_prior_eigen_ratio_floor: 1.0e-9 # bounded relative SPD floor for whitening
+  normal_anisotropy_weight_en: true # independent Innovation 4 ablation switch
+  normal_balance_en: false
+  normal_balance_target_fraction: 0.35 # soft cap per normal-direction bin
+  normal_balance_min_weight: 0.20      # keep dominant planes contributing, but less
+  incidence_weight_en: false
+  incidence_min_weight: 0.10  # lower bound for grazing-angle constraints
+  incidence_weight_power: 1.0 # >1 penalizes grazing incidence more strongly
+  robust_kernel_en: true
+  robust_kernel_type: cauchy    # cauchy or huber, applied to normalized LIO residuals
+  robust_kernel_delta: 3.0      # residual/sigma scale where downweighting starts
+  robust_kernel_min_weight: 0.05
+  lio_hard_outlier_reject_en: true
+  lio_hard_outlier_residual_sigma: 2.75
+  lio_hard_outlier_dynamic_score: 0.40
+  scan_distortion_weight_en: false
+  scan_distortion_rot_ref: 0.25   # rad/scan that saturates scan-distortion rotational risk
+  scan_distortion_trans_ref: 0.20 # m/scan that saturates scan-distortion translational risk
+  scan_distortion_noise_gain: 2.0
+  scan_distortion_min_weight: 0.30
+  lidar_return_quality_en: true
+  lidar_intensity_ref: 80.0       # intensity where weak-return penalty disappears
+  lidar_saturation_ref: 240.0     # above this, saturation/specular penalty starts
+  lidar_range_ref: 35.0           # m, farther points are softly downweighted
+  lidar_range_adaptive_en: true    # Innovation 20: adapt to high-altitude/far-view scans
+  lidar_range_candidate_source_en: true # Innovation 23: use all candidates; false restores matched-only source
+  lidar_range_ref_max: 80.0        # m, hard upper bound; base lidar_range_ref is never reduced
+  lidar_range_quantile: 0.70       # robust range statistic from the active candidate/matched source
+  lidar_range_ref_ema_alpha: 0.15  # per-frame adaptation rate
+  lidar_density_ref: 20.0         # local plane support points for full density score
+  lidar_return_min_weight: 0.25
+  map_write_gate_en: true         # Innovation 13: suppress unstable LiDAR writes to voxel map
+  map_write_residual_sigma: 2.5   # normalized residual scale for matched-point write confidence
+  map_write_min_score: 0.35       # minimum confidence for map insertion/update
+  map_write_unmatched_risk_thresh: 0.45 # above this, unmatched new-area writes need higher confidence
+  map_write_min_return: 0.20      # reject writes below this return-quality score
+  map_write_recovery_en: true     # bounded frontier recovery after sustained map-write starvation
+  map_write_recovery_trigger_frames: 8
+  map_write_recovery_budget_ratio: 0.05
+  map_write_recovery_min_return: 0.55
+  map_write_recovery_max_dynamic: 0.25
+  map_write_recovery_max_risk: 0.85
+  dynamic_object_filter_en: true  # Innovation 16: suppress transient objects conflicting with stable planes
+  dynamic_residual_sigma: 3.0     # normalized residual where dynamic conflict starts
+  dynamic_map_reject_score: 0.65  # reject map writes above this dynamic conflict score
+  dynamic_motion_gain: 0.50       # attenuate single-frame dynamic confidence during high self-motion
+  total_lio_min_weight: 0.03      # floor after all LIO precision weights are multiplied
+  plane_quality_weight_en: false # optional fitted-plane precision ablation switch
+
+  # Innovation 2 — image quality adaptive VIO covariance (vio)
+  vio_quality_en: true
+  vio_cov_fusion_en: true       # Innovation 21: avoid multiplying correlated temporal/cross-modal risks
+  vio_cov_scale_max: 100.0      # final covariance upper bound relative to img_point_cov
+  min_gen_quality: 0.15        # below this skip generateVisualMapPoints
+  min_update_quality: 0.18     # below this skip updateVisualMapPoints (observation writes)
+  min_ref_update_quality: 0.20 # below this skip updateReferencePatch
+  lio_info_warmup_frames: 50   # keep LIO->VIO trust neutral while online info baseline calibrates
+  map_starving_min_quality: 0.08 # absolute floor before low-map-count frames can write visual map
+  visual_lifecycle_en: true
+  visual_lifecycle_max_fail: 6
+  visual_lifecycle_min_quality: 0.18
+  visual_view_weight_en: true
+  visual_view_min_weight: 0.20
+  visual_view_min_cos: 0.17       # below this incidence cosine, visual patch is near-grazing
+  visual_affine_det_ref: 3.0      # affine determinant deformation where score is about half
+  cross_modal_gate_en: true       # Innovation 15: arbitrate when LIO and VIO degrade together
+  cross_modal_cov_gain: 3.0       # extra VIO covariance gain under double degradation
+  cross_modal_map_risk_thresh: 0.60 # block visual map writes above this joint risk
+  cross_modal_min_lio_points: 80  # effective LIO constraints needed for full LIO health
+  cross_modal_min_track_points: 30 # tracked visual points needed for full VIO health
+  temporal_degrade_en: true       # Innovation 17: image-time/exposure/motion consistency gate
+  temporal_jitter_ref: 0.02       # s, frame-interval jitter that saturates temporal risk
+  temporal_lio_vio_gap_ref: 0.05  # s, paired LIO/VIO skew that saturates temporal risk
+  temporal_exposure_jump_ref: 0.35 # log inverse-exposure jump that saturates temporal risk
+  temporal_cov_gain: 2.0          # extra VIO covariance gain under temporal degradation
+  temporal_motion_gain: 0.75      # aggressive motion amplifies timing/exposure risk
+  temporal_map_risk_thresh: 0.65  # block visual map writes above this temporal risk
+  ref_patch_adaptive_en: true     # Innovation 18: quality/age-aware reference patch selection
+  ref_patch_max_age: 120          # frames before a reference patch is considered stale
+  ref_patch_min_score: 0.30       # reject visual constraints below this reference quality
+  ref_patch_min_weight: 0.30      # lower bound for reference-quality residual weighting
+  ref_patch_view_cos_min: 0.35    # current/reference view cosine below this is degraded
+  ref_patch_exposure_ref: 0.35    # log inverse-exposure jump that halves reference quality
+  ref_patch_switch_margin: 0.05   # hysteresis to avoid frequent reference switching
+
+  # Innovation 3 — motion-excitation adaptive process noise (IMU)
+  motion_degrade_en: true      # Innovation 3 ablation switch
+  motion_vel_max: 5.0          # m/s that saturates velocity component of motion_degrade
+  motion_gyr_max: 2.0          # rad/s that saturates angular-rate component
+  motion_jerk_ref: 50.0        # m/s^3 that saturates jerk component
+  motion_risk_tau: 0.10        # s, IMU-rate-independent smoothing time constant
+  motion_noise_gain: 2.0       # process-noise inflation: Q *= 1 + gain * md^2
+  vibration_degrade_en: true   # Innovation 19 ablation switch
+  vibration_acc_ref: 4.0       # m/s^2 high-pass acceleration residual that saturates vibration risk
+  vibration_gyr_ref: 0.6       # rad/s high-pass gyro residual that saturates vibration risk
+  vibration_noise_gain: 1.5    # extra process-noise inflation from high-frequency vibration
+  vibration_lpf_tau: 0.05      # s, IMU-rate-independent low-pass time constant
+
+  # Innovation 6 — adaptive LiDAR point-cloud downsampling (preprocess)
+  preprocess_adaptive_en: false
+  preprocess_intensity_quality_en: true # use native-unit return quality in adaptive sampling
+  preprocess_max_filter_num: 6  # hard upper bound on point_filter_num
+  preprocess_near_dist: 5.0     # m — points closer than this are "near"
+  preprocess_far_dist: 30.0     # m — points farther than this are "far"
+  preprocess_bad_hysteresis_frames: 2  # degraded frames before keeping more points
+  preprocess_good_hysteresis_frames: 6 # healthy frames before coarsening sampling
+
+debug:
+  verbose_runtime_log: false
+  state_log_en: false
+  imu_log_en: false
